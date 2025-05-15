@@ -127,26 +127,21 @@ export default function CreatorHighlight() {
   };
 
   // Scroll only when manually triggered
+  // In creator-highlight.tsx
   const scrollToCreator = (index: number) => {
-    isManualScrolling.current = true;
-    updateActiveIndex(index);
-
+    setActiveIndex(index);
     if (scrollContainerRef.current) {
       const cards =
         scrollContainerRef.current.querySelectorAll(".creator-card");
       if (cards[index]) {
+        // Add behavior: 'auto' to prevent smooth scrolling that might affect the page
         cards[index].scrollIntoView({
-          behavior: "smooth",
+          behavior: "auto", // Changed from 'smooth' to 'auto'
           block: "nearest",
           inline: "center",
         });
       }
     }
-
-    // Reset the manual scrolling flag after animation completes
-    setTimeout(() => {
-      isManualScrolling.current = false;
-    }, 1000);
   };
 
   const nextCreator = () => {
@@ -221,19 +216,24 @@ export default function CreatorHighlight() {
 
       <div
         ref={scrollContainerRef}
-        className="flex overflow-x-auto pb-8 snap-x snap-mandatory w-full no-scrollbar"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        className="flex overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory w-full px-4 md:px-0"
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+          scrollSnapType: "x mandatory",
+        }}
       >
         {featuredCreators.map((creator, index) => (
           <div
             key={creator.id}
             className={cn(
-              "creator-card flex-shrink-0 snap-center px-4 w-full md:w-1/2 lg:w-1/3 transition-opacity duration-300",
+              "creator-card flex-shrink-0 snap-center px-2 w-[85vw] md:w-1/2 lg:w-1/3 transition-opacity duration-300",
               index === activeIndex
                 ? "opacity-100"
                 : "opacity-50 hover:opacity-80"
             )}
             onClick={() => scrollToCreator(index)}
+            style={{ scrollSnapAlign: "center" }}
           >
             <Card className="overflow-hidden border-border/50 transition-all duration-300 hover:border-primary/50 hover:shadow-lg">
               <CardContent className="p-0">

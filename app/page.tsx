@@ -38,7 +38,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full max-w-[100vw] overflow-x-hidden">
       <HeroSection />
 
       <section className="container mx-auto px-4 py-12 md:py-16">
