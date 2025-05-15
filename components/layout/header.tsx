@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ModeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { 
-  ShoppingCart, 
-  User, 
-  Heart, 
-  Menu, 
+import {
+  ShoppingCart,
+  User,
+  Heart,
+  Menu,
   X,
-  ChevronDown
+  ChevronDown,
+  ChevronRight,
+  Search,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -20,7 +22,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 
 const categories = [
   { name: "Fashion", href: "/categories/fashion" },
@@ -35,29 +43,51 @@ const categories = [
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const headerRef = useRef(null);
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu when screen size changes to desktop
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024 && mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [mobileMenuOpen]);
+
   return (
-    <header className={cn(
-      "sticky top-0 z-50 w-full transition-all duration-200 ease-in-out",
-      isScrolled ? "bg-background/95 backdrop-blur-sm border-b shadow-sm" : "bg-transparent"
-    )}>
+    <header
+      ref={headerRef}
+      className={cn(
+        "sticky top-0 z-50 w-full transition-all duration-200 ease-in-out",
+        isScrolled
+          ? "bg-background/95 backdrop-blur-sm border-b shadow-sm"
+          : "bg-transparent"
+      )}
+    >
       {/* Main Navigation */}
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
-          <div className="flex items-center space-x-8">
-            <Link href="/" className="flex items-center font-bold text-2xl">
+          <div className="flex items-center space-x-4 md:space-x-8">
+            <Link
+              href="/"
+              className="flex items-center font-bold text-xl md:text-2xl"
+            >
               CreatorMarket
             </Link>
-            
+
             <nav className="hidden lg:flex items-center space-x-1">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -78,7 +108,7 @@ export default function Header() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              
+
               <Button variant="ghost" className="text-base" asChild>
                 <Link href="/creators">Creators</Link>
               </Button>
@@ -90,16 +120,25 @@ export default function Header() {
               </Button>
             </nav>
           </div>
-          
-          <div className="hidden lg:flex items-center space-x-2">
+
+          <div className="hidden lg:flex items-center space-x-4">
+            <div className="relative w-60">
+              <Input
+                type="text"
+                placeholder="Search products..."
+                className="pr-8 h-9 w-full"
+              />
+              <Search className="absolute right-2.5 top-2 h-5 w-5 text-muted-foreground" />
+            </div>
+
             <Button variant="ghost" size="icon" className="h-10 w-10">
               <Heart className="h-5 w-5" />
             </Button>
-            
+
             <Button variant="ghost" size="icon" className="h-10 w-10">
               <ShoppingCart className="h-5 w-5" />
             </Button>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="h-10 w-10">
@@ -127,46 +166,138 @@ export default function Header() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            
+
             <ModeToggle />
           </div>
-          
-          <div className="lg:hidden">
-            <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+
+          <div className="flex items-center space-x-2 lg:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </Button>
           </div>
         </div>
       </div>
-      
+
       {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-background border-b">
           <div className="container mx-auto px-4 py-6 space-y-6">
+            <div className="relative">
+              <Input
+                type="text"
+                placeholder="Search products..."
+                className="pr-8 h-10 w-full"
+              />
+              <Search className="absolute right-2.5 top-2.5 h-5 w-5 text-muted-foreground" />
+            </div>
+
             <nav className="grid gap-4">
-              <Button variant="outline" asChild className="justify-start h-12 text-base">
-                <Link href="/categories">Categories</Link>
-              </Button>
-              <Button variant="outline" asChild className="justify-start h-12 text-base">
+              {/* Categories with collapsible dropdown in mobile view */}
+              <Collapsible
+                open={categoryOpen}
+                onOpenChange={setCategoryOpen}
+                className="w-full"
+              >
+                <CollapsibleTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="justify-between w-full h-12 text-base"
+                  >
+                    Categories
+                    <ChevronDown
+                      className={cn(
+                        "h-4 w-4 transition-transform duration-200",
+                        categoryOpen ? "rotate-180" : ""
+                      )}
+                    />
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2 space-y-2 pl-4">
+                  {categories.map((category) => (
+                    <div
+                      key={category.name}
+                      className="py-2 border-t first:border-t-0"
+                    >
+                      <Link
+                        href={category.href}
+                        className="flex items-center text-sm hover:text-primary"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <ChevronRight className="mr-2 h-4 w-4" />
+                        {category.name}
+                      </Link>
+                    </div>
+                  ))}
+                  <div className="py-2 border-t">
+                    <Link
+                      href="/categories"
+                      className="flex items-center text-sm font-medium hover:text-primary"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      View All Categories
+                    </Link>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
+
+              <Button
+                variant="outline"
+                className="justify-start h-12 text-base"
+                asChild
+              >
                 <Link href="/creators">Creators</Link>
               </Button>
-              <Button variant="outline" asChild className="justify-start h-12 text-base">
+              <Button
+                variant="outline"
+                className="justify-start h-12 text-base"
+                asChild
+              >
                 <Link href="/trending">Trending</Link>
               </Button>
-              <Button variant="outline" asChild className="justify-start h-12 text-base">
+              <Button
+                variant="outline"
+                className="justify-start h-12 text-base"
+                asChild
+              >
                 <Link href="/deals">Deals</Link>
               </Button>
             </nav>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline" size="lg" className="h-12" asChild>
-                <Link href="/account/dashboard">My Account</Link>
+
+            <div className="flex items-center justify-between">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-12 w-12 flex-1 mr-2"
+              >
+                <Heart className="h-5 w-5" />
               </Button>
-              <Button variant="outline" size="lg" className="h-12" asChild>
-                <Link href="/account/orders">Orders</Link>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-12 w-12 flex-1 mr-2"
+              >
+                <ShoppingCart className="h-5 w-5" />
               </Button>
+              <Link href="/account/dashboard" className="flex-1 mr-2">
+                <Button variant="outline" size="icon" className="h-12 w-12">
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
+              <div className="h-12 w-12 flex-1 flex items-center justify-center">
+                <ModeToggle />
+              </div>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <Button variant="default" size="lg" className="h-12" asChild>
                 <Link href="/login">Login</Link>
