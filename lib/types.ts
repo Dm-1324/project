@@ -30,4 +30,18 @@ export interface Product {
   reviewCount: number;
   trending: boolean;
   discount: number | null;
+  description?: string;
+  specifications?: {
+    [key: string]: string;
+  };
+}
+
+export interface CartItem {
+  productId: string;
+  quantity: number;
+}
+
+export interface CartState {
+  items: CartItem[];
+  total: number;
 }

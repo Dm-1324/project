@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { ModeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import CartSheet from "@/components/cart/cart-sheet";
 import {
-  ShoppingCart,
   User,
   Heart,
   Menu,
@@ -55,7 +55,6 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu when screen size changes to desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024 && mobileMenuOpen) {
@@ -77,7 +76,6 @@ export default function Header() {
           : "bg-transparent"
       )}
     >
-      {/* Main Navigation */}
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
           <div className="flex items-center space-x-4 md:space-x-8">
@@ -135,9 +133,7 @@ export default function Header() {
               <Heart className="h-5 w-5" />
             </Button>
 
-            <Button variant="ghost" size="icon" className="h-10 w-10">
-              <ShoppingCart className="h-5 w-5" />
-            </Button>
+            <CartSheet />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -171,6 +167,7 @@ export default function Header() {
           </div>
 
           <div className="flex items-center space-x-2 lg:hidden">
+            <CartSheet />
             <Button
               variant="ghost"
               size="icon"
@@ -188,7 +185,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden bg-background border-b w-full">
           <div className="container mx-auto px-4 py-4 space-y-4">
@@ -202,7 +198,6 @@ export default function Header() {
             </div>
 
             <nav className="grid gap-4">
-              {/* Categories with collapsible dropdown in mobile view */}
               <Collapsible
                 open={categoryOpen}
                 onOpenChange={setCategoryOpen}
@@ -280,13 +275,6 @@ export default function Header() {
                 className="h-12 w-12 flex-1 mr-2"
               >
                 <Heart className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-12 w-12 flex-1 mr-2"
-              >
-                <ShoppingCart className="h-5 w-5" />
               </Button>
               <Link href="/account/dashboard" className="flex-1 mr-2">
                 <Button variant="outline" size="icon" className="h-12 w-12">
