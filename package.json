@@ -78,5 +78,14 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dm-1324/project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Dm-1324/project/issues"
+  },
+  "homepage": "https://github.com/Dm-1324/project#readme"
 }

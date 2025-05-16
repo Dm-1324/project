@@ -93,7 +93,7 @@ export default function Home() {
             audience, and start selling your products with zero hassle.
           </p>
           <Button variant="secondary" size="lg" asChild>
-            <Link href="/creator/signup">Become a Creator</Link>
+            <Link href="/creator/info">Become a Creator</Link>
           </Button>
         </div>
       </section>
