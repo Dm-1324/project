@@ -9,6 +9,15 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 
+//  user: {
+//     email: "user@test.com",
+//     password: "test123456",
+//   },
+//   creator: {
+//     email: "creator@test.com",
+//     password: "test123456",
+//   },
+
 export default function UserProfile() {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
