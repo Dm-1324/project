@@ -44,6 +44,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // New state for logged in status
   const headerRef = useRef(null);
 
   useEffect(() => {
@@ -51,6 +52,14 @@ export default function Header() {
       setIsScrolled(window.scrollY > 10);
     };
 
+    // Check if user is logged in
+    const checkLoginStatus = () => {
+      // Replace this with your actual auth logic
+      const token = localStorage.getItem("auth-token");
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -135,38 +144,51 @@ export default function Header() {
 
             <CartSheet />
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-10 w-10">
-                  <User className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/account/dashboard">Dashboard</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/account/orders">My Orders</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/account/wishlist">Wishlist</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/login">Login</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/signup">Sign Up</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {isLoggedIn ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-10 w-10">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/account/dashboard">Dashboard</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/account/orders">My Orders</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/account/wishlist">Wishlist</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => {
+                      localStorage.removeItem("auth-token");
+                      setIsLoggedIn(false);
+                    }}
+                  >
+                    Log Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="default" asChild>
+                <Link href="/signup">Get Started</Link>
+              </Button>
+            )}
 
             <ModeToggle />
           </div>
 
           <div className="flex items-center space-x-2 lg:hidden">
+            {!isLoggedIn && (
+              <Button variant="default" size="sm" asChild className="mr-1">
+                <Link href="/signup">Get Started</Link>
+              </Button>
+            )}
             <CartSheet />
             <Button
               variant="ghost"
@@ -276,24 +298,40 @@ export default function Header() {
               >
                 <Heart className="h-5 w-5" />
               </Button>
-              <Link href="/account/dashboard" className="flex-1 mr-2">
-                <Button variant="outline" size="icon" className="h-12 w-12">
-                  <User className="h-5 w-5" />
-                </Button>
-              </Link>
+              {isLoggedIn && (
+                <Link href="/account/dashboard" className="flex-1 mr-2">
+                  <Button variant="outline" size="icon" className="h-12 w-12">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </Link>
+              )}
               <div className="h-12 w-12 flex-1 flex items-center justify-center">
                 <ModeToggle />
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="default" size="lg" className="h-12" asChild>
-                <Link href="/login">Login</Link>
+            {!isLoggedIn && (
+              <div className="grid grid-cols-2 gap-4">
+                <Button variant="outline" size="lg" className="h-12" asChild>
+                  <Link href="/login">Login</Link>
+                </Button>
+                <Button variant="secondary" size="lg" className="h-12" asChild>
+                  <Link href="/signup">Sign Up</Link>
+                </Button>
+              </div>
+            )}
+            {isLoggedIn && (
+              <Button
+                variant="outline"
+                className="w-full h-12"
+                onClick={() => {
+                  localStorage.removeItem("auth-token");
+                  setIsLoggedIn(false);
+                }}
+              >
+                Log Out
               </Button>
-              <Button variant="secondary" size="lg" className="h-12" asChild>
-                <Link href="/signup">Sign Up</Link>
-              </Button>
-            </div>
+            )}
           </div>
         </div>
       )}
