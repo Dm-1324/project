@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function UserProfile() {
   const { user } = useAuth();
@@ -48,7 +49,10 @@ export default function UserProfile() {
               <div className="flex items-center gap-4 mb-6">
                 <div className="relative h-20 w-20 rounded-full overflow-hidden">
                   <Image
-                    src={user.avatar || "https://api.dicebear.com/7.x/avataaars/svg?seed=default"}
+                    src={
+                      user.avatar ||
+                      "https://api.dicebear.com/7.x/avataaars/svg?seed=default"
+                    }
                     alt={user.name}
                     fill
                     className="object-cover"
@@ -64,7 +68,9 @@ export default function UserProfile() {
                 <Input
                   id="name"
                   value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                 />
               </div>
 
@@ -74,7 +80,9 @@ export default function UserProfile() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                 />
               </div>
 
