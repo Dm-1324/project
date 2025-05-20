@@ -1,3 +1,4 @@
+// components/products/product-grid.tsx
 "use client";
 
 import Link from "next/link";
@@ -5,10 +6,11 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ShoppingCart, Heart, Star } from "lucide-react";
+import { ShoppingCart, Heart, Star, Tag } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type Product } from "@/lib/types";
 import { useState } from "react";
+import { useWishlistStore } from "@/lib/store/wishlist";
 
 interface ProductGridProps {
   products: Product[];
@@ -16,12 +18,39 @@ interface ProductGridProps {
 
 export default function ProductGrid({ products }: ProductGridProps) {
   const [hoverStates, setHoverStates] = useState<Record<string, boolean>>({});
+  const { addItem, removeItem, isInWishlist } = useWishlistStore();
 
   const handleProductHover = (productId: string, isHovered: boolean) => {
     setHoverStates((prev) => ({
       ...prev,
       [productId]: isHovered,
     }));
+  };
+
+  const handleWishlistClick = (productId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    if (isInWishlist(productId)) {
+      removeItem(productId);
+    } else {
+      addItem(productId);
+    }
+  };
+
+  const getTagStyle = (tag: string) => {
+    switch (tag.toLowerCase()) {
+      case "self made":
+        return "bg-blue-100 text-blue-800 hover:bg-blue-200";
+      case "promotional":
+        return "bg-green-100 text-green-800 hover:bg-green-200";
+      case "resale":
+        return "bg-purple-100 text-purple-800 hover:bg-purple-200";
+      case "limited edition":
+        return "bg-amber-100 text-amber-800 hover:bg-amber-200";
+      case "new arrival":
+        return "bg-teal-100 text-teal-800 hover:bg-teal-200";
+      default:
+        return "bg-gray-100 text-gray-800 hover:bg-gray-200";
+    }
   };
 
   return (
@@ -67,6 +96,28 @@ export default function ProductGrid({ products }: ProductGridProps) {
                   </Link>
                 </Badge>
 
+                {product.tags && product.tags.length > 0 && (
+                  <div
+                    className={cn(
+                      "absolute bottom-16 left-4 flex flex-wrap gap-2 transition-opacity duration-300",
+                      hoverStates[product.id] ? "opacity-100" : "opacity-80"
+                    )}
+                  >
+                    {product.tags.map((tag) => (
+                      <Badge
+                        key={tag}
+                        className={cn(
+                          "rounded-full text-sm py-0.5 px-2 flex items-center gap-1.5",
+                          getTagStyle(tag)
+                        )}
+                      >
+                        <Tag className="h-3 w-3" />
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+
                 <div
                   className={cn(
                     "absolute bottom-4 right-4 transition-opacity duration-300",
@@ -75,10 +126,14 @@ export default function ProductGrid({ products }: ProductGridProps) {
                 >
                   <Button
                     size="icon"
-                    variant="secondary"
+                    variant={isInWishlist(product.id) ? "default" : "secondary"}
                     className="rounded-full shadow-sm mr-2 h-12 w-12"
+                    onClick={(e) => handleWishlistClick(product.id, e)}
                   >
-                    <Heart className="h-5 w-5" />
+                    <Heart
+                      className="h-5 w-5"
+                      fill={isInWishlist(product.id) ? "currentColor" : "none"}
+                    />
                   </Button>
                   <Button
                     size="icon"
