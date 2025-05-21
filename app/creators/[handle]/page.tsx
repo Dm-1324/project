@@ -7,13 +7,15 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Instagram, Youtube, BookText as TikTok } from "lucide-react";
 import ProductGrid from "@/components/products/product-grid";
-import { featuredCreators, products } from "@/lib/data";
+import { getFeaturedCreators } from "@/lib/data";
+import { products } from "@/lib/staticData";
 
-export default function CreatorShopPage({
+export default async function CreatorShopPage({
   params,
 }: {
   params: { handle: string };
 }) {
+  let featuredCreators = await getFeaturedCreators();
   const creator = featuredCreators.find((c) => c.handle === params.handle);
 
   if (!creator) {

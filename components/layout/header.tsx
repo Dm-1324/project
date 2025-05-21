@@ -163,7 +163,7 @@ export default function Header() {
           </div>
 
           <div className="flex lg:hidden items-center space-x-2">
-            <CartSheet />
+            {/* <CartSheet /> */}
 
             {user ? (
               <Sheet>

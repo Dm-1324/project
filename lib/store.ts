@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { CartState, CartItem } from "./types";
-import { products } from "./data";
+import { products } from "./staticData";
 
 interface CartStore extends CartState {
   addItem: (productId: string) => void;

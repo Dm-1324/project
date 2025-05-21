@@ -5,7 +5,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
-import { categories } from "@/lib/data";
+// import { categories } from "@/lib/data";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function CategorySection() {
@@ -13,7 +13,7 @@ export default function CategorySection() {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 px-2 md:px-0">
-      {categories.map((category, index) => (
+      helo{/* {categories.map((category, index) => (
         <Link
           key={category.name}
           href={`/categories/${category.slug}`}
@@ -60,7 +60,7 @@ export default function CategorySection() {
             </CardContent>
           </Card>
         </Link>
-      ))}
+      ))} */}
     </div>
   );
 }
