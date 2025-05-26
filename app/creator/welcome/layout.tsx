@@ -20,11 +20,8 @@ export default function CreatorWelcomeLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
-        <div className="min-h-screen bg-background">
-          {children}
-        </div>
-      </body>
+      <head />
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

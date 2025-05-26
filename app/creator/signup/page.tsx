@@ -24,7 +24,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Eye, EyeOff, AlertCircle, Upload } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, Instagram, Youtube, Twitter } from "lucide-react";
 
 const categories = [
   { value: "fashion", label: "Fashion" },
@@ -46,6 +46,9 @@ export default function CreatorSignupPage() {
     handle: "",
     bio: "",
     category: "fashion",
+    instagram: "",
+    youtube: "",
+    twitter: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -55,6 +58,7 @@ export default function CreatorSignupPage() {
     confirmPassword?: string;
     handle?: string;
     terms?: string;
+    socials?: string;
   }>({});
 
   const handleChange = (
@@ -63,7 +67,6 @@ export default function CreatorSignupPage() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear related errors when field changes
     if (name === "password" || name === "confirmPassword") {
       setFormErrors((prev) => ({
         ...prev,
@@ -72,6 +75,8 @@ export default function CreatorSignupPage() {
       }));
     } else if (name === "handle") {
       setFormErrors((prev) => ({ ...prev, handle: undefined }));
+    } else if (["instagram", "youtube", "twitter"].includes(name)) {
+      setFormErrors((prev) => ({ ...prev, socials: undefined }));
     }
   };
 
@@ -79,7 +84,6 @@ export default function CreatorSignupPage() {
     setFormData((prev) => ({ ...prev, category: value }));
   };
 
-  // Helper function to create a handle from name
   const generateHandle = () => {
     if (formData.name) {
       const handle = formData.name
@@ -96,19 +100,17 @@ export default function CreatorSignupPage() {
       confirmPassword?: string;
       handle?: string;
       terms?: string;
+      socials?: string;
     } = {};
 
-    // Password validation
     if (formData.password.length < 8) {
       errors.password = "Password must be at least 8 characters";
     }
 
-    // Confirm password validation
     if (formData.password !== formData.confirmPassword) {
       errors.confirmPassword = "Passwords do not match";
     }
 
-    // Handle validation
     if (!formData.handle) {
       errors.handle = "Handle is required";
     } else if (!/^[a-z0-9_]+$/.test(formData.handle)) {
@@ -116,9 +118,13 @@ export default function CreatorSignupPage() {
         "Handle can only contain lowercase letters, numbers, and underscores";
     }
 
-    // Terms validation
     if (!acceptTerms) {
       errors.terms = "You must accept the terms and conditions";
+    }
+
+    // Check if at least one social media link is provided
+    if (!formData.instagram && !formData.youtube && !formData.twitter) {
+      errors.socials = "At least one social media link is required";
     }
 
     setFormErrors(errors);
@@ -139,6 +145,11 @@ export default function CreatorSignupPage() {
             bio: formData.bio,
             followers: 0,
             categories: [formData.category],
+            socials: {
+              instagram: formData.instagram,
+              youtube: formData.youtube,
+              twitter: formData.twitter,
+            },
           },
         },
         formData.password
@@ -230,9 +241,6 @@ export default function CreatorSignupPage() {
               {formErrors.handle && (
                 <p className="text-red-500 text-sm mt-1">{formErrors.handle}</p>
               )}
-              <p className="text-muted-foreground text-xs mt-1">
-                This will be your unique identifier on the platform
-              </p>
             </div>
 
             <div className="space-y-2">
@@ -268,12 +276,50 @@ export default function CreatorSignupPage() {
               />
             </div>
 
+            <div className="space-y-4">
+              <Label>Social Media Links (at least one required)</Label>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Instagram className="h-5 w-5 text-muted-foreground" />
+                  <Input
+                    name="instagram"
+                    placeholder="Instagram username"
+                    value={formData.instagram}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Youtube className="h-5 w-5 text-muted-foreground" />
+                  <Input
+                    name="youtube"
+                    placeholder="YouTube channel URL"
+                    value={formData.youtube}
+                    onChange={handleChange}
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Twitter className="h-5 w-5 text-muted-foreground" />
+                  <Input
+                    name="twitter"
+                    placeholder="Twitter username"
+                    value={formData.twitter}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+              {formErrors.socials && (
+                <p className="text-red-500 text-sm">{formErrors.socials}</p>
+              )}
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="creator-password">Password</Label>
+                <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Input
-                    id="creator-password"
+                    id="password"
                     name="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="••••••••"
@@ -305,12 +351,10 @@ export default function CreatorSignupPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="creator-confirm-password">
-                  Confirm Password
-                </Label>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
                 <div className="relative">
                   <Input
-                    id="creator-confirm-password"
+                    id="confirmPassword"
                     name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="••••••••"
@@ -344,7 +388,7 @@ export default function CreatorSignupPage() {
 
             <div className="flex items-start space-x-2 pt-2">
               <Checkbox
-                id="creator-terms"
+                id="terms"
                 checked={acceptTerms}
                 onCheckedChange={(checked) => {
                   setAcceptTerms(checked as boolean);
@@ -353,7 +397,7 @@ export default function CreatorSignupPage() {
               />
               <div className="grid gap-1.5 leading-none">
                 <label
-                  htmlFor="creator-terms"
+                  htmlFor="terms"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   I agree to the{" "}
@@ -384,9 +428,7 @@ export default function CreatorSignupPage() {
 
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading
-                ? "Creating Creator Account..."
-                : "Create Creator Account"}
+              {isLoading ? "Creating Account..." : "Create Creator Account"}
             </Button>
 
             <div className="text-center text-sm">
