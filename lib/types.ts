@@ -79,5 +79,10 @@ export interface User {
     categories: string[];
     coverImage?: string;
     storeLayout?: "default" | "minimal" | "grid" | "magazine";
+    socials?: {
+      instagram: string;
+      youtube: string;
+      twitter: string;
+    };
   };
 }
