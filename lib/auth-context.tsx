@@ -18,6 +18,11 @@ export interface User {
     bio: string;
     followers: number;
     categories: string[];
+    socials?: {
+      instagram: string;
+      youtube: string;
+      twitter: string;
+    };
   };
 }
 
